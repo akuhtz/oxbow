@@ -2,3 +2,5 @@
 .DS_Store
 swingbits/.idea
 *.iml
+/swingbits/.classpath
+/swingbits/.project
