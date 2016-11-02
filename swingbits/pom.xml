@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -10,7 +9,7 @@
 
     <groupId>org.bidib.org.oxbow</groupId>
     <artifactId>swingbits</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.1</version>
     
     <name>Oxbow Project</name>
     <description>A collection of useful components and utilities for Java Swing Toolkit</description>
@@ -37,7 +36,8 @@
         <url>https://github.com/akuhtz/oxbow.git</url>
         <connection>scm:git:https://github.com/akuhtz/oxbow.git</connection>
         <developerConnection>scm:git:https://github.com/akuhtz/oxbow.git</developerConnection>
-    </scm>
+      <tag>swingbits-1.2.1</tag>
+  </scm>
 
     <distributionManagement>
         <snapshotRepository>
@@ -202,7 +202,7 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
-                    <excludes/>
+                    <excludes />
 
                 </configuration>
             </plugin>
