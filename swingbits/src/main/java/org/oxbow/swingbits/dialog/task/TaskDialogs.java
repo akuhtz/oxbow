@@ -189,6 +189,36 @@ public final class TaskDialogs {
                 instruction,
                 text).setVisible(true);
         }
+        
+        /**
+         *  Shows simple exception message
+         */
+        public void exception(Throwable ex) {
+            TaskDialog dlg = messageDialog(
+                parent,
+                getTitle( TaskDialog.makeKey("Error")),
+                getIcon( TaskDialog.StandardIcon.ERROR ),
+                instruction,
+                text);
+            
+            String msg = ex.getMessage();
+            boolean noMessage = Strings.isEmpty(msg);
+            
+            JTextArea text = new JTextArea();
+            text.setEditable(false);
+            text.setFont( UIManager.getFont("Label.font"));
+            text.setText(Strings.stackStraceAsString(ex));
+            text.setCaretPosition(0);
+
+            JScrollPane scroller = new JScrollPane( text );
+            scroller.setPreferredSize(new Dimension(400,200));
+            dlg.getDetails().setExpandableComponent( scroller);
+            dlg.getDetails().setExpanded(noMessage);
+
+            dlg.setResizable(true);
+
+            dlg.setVisible(true);
+        }
 
         /**
          * Shows simple question
@@ -245,9 +275,20 @@ public final class TaskDialogs {
             String className = ex.getClass().getName();
             boolean noMessage = Strings.isEmpty(msg);
 
-            dlg.setInstruction( noMessage? className: msg );
-            dlg.setText( noMessage? "": className );
-
+            if (instruction != null) {
+            	dlg.setInstruction( instruction);
+            }
+            else {
+            	dlg.setInstruction( noMessage? className: msg );
+            }
+            
+            if (text != null) {
+            	dlg.setText(text);
+            }
+            else {
+            	dlg.setText( noMessage? "": className );
+            }
+            
             dlg.setIcon( getIcon( TaskDialog.StandardIcon.ERROR ));
             dlg.setCommands( StandardCommand.CANCEL.derive(TaskDialog.makeKey("Close")));
 
