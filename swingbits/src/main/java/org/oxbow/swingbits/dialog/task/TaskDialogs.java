@@ -51,14 +51,16 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.event.AncestorEvent;
 
-import net.miginfocom.swing.MigLayout;
-
 import org.oxbow.swingbits.dialog.task.TaskDialog.StandardCommand;
 import org.oxbow.swingbits.dialog.task.design.CommandLinkButton;
 import org.oxbow.swingbits.dialog.task.design.CommandLinkButtonGroup;
 import org.oxbow.swingbits.list.CheckList;
 import org.oxbow.swingbits.util.Strings;
 import org.oxbow.swingbits.util.swing.AncestorAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.miginfocom.swing.MigLayout;
 
 /**
  *
@@ -69,150 +71,149 @@ import org.oxbow.swingbits.util.swing.AncestorAdapter;
  */
 public final class TaskDialogs {
 
-    private TaskDialogs() {}
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskDialogs.class);
+
+    private TaskDialogs() {
+    }
 
     public static final class TaskDialogBuilder {
 
         private Window parent = null;
+
         private String title = null;
+
         private Icon icon = null;
+
         private String instruction = null;
+
         private String text = null;
+
         private Integer inputColumns = null;
 
-        private TaskDialogBuilder() {}
+        private TaskDialogBuilder() {
+        }
 
         /**
          * Sets dialog parent
+         * 
          * @param title
          * @return
          */
-        public TaskDialogBuilder parent( Window parent ) {
+        public TaskDialogBuilder parent(Window parent) {
             this.parent = parent;
             return TaskDialogBuilder.this;
         }
 
-
         /**
          * Sets dialog title
+         * 
          * @param title
          * @return
          */
-        public TaskDialogBuilder title( String title ) {
+        public TaskDialogBuilder title(String title) {
             this.title = title;
             return TaskDialogBuilder.this;
         }
 
         /**
          * Sets dialog icon
+         * 
          * @param icon
          * @return
          */
-        public TaskDialogBuilder icon( Icon icon ) {
+        public TaskDialogBuilder icon(Icon icon) {
             this.icon = icon;
             return TaskDialogBuilder.this;
         }
 
         /**
          * Sets instruction test
-         * @param instruction instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
+         * 
+         * @param instruction
+         *            instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
          * @return
          */
-        public TaskDialogBuilder instruction( String instruction ) {
+        public TaskDialogBuilder instruction(String instruction) {
             this.instruction = instruction;
             return TaskDialogBuilder.this;
         }
 
         /**
          * Sets dialog text
+         * 
          * @param text
          * @return
          */
-        public TaskDialogBuilder text( String text ) {
+        public TaskDialogBuilder text(String text) {
             this.text = text;
             return TaskDialogBuilder.this;
         }
 
         /**
          * Sets number of columns in the text field for input dialog
+         * 
          * @param columns
          * @return
          */
-        public TaskDialogBuilder inputColumns( int columns ) {
+        public TaskDialogBuilder inputColumns(int columns) {
             this.inputColumns = columns;
             return TaskDialogBuilder.this;
         }
 
-        private String getTitle( String defaultTitle ) {
-            return title == null? defaultTitle: title;
+        private String getTitle(String defaultTitle) {
+            return title == null ? defaultTitle : title;
         }
 
-        private Icon getIcon( Icon defaultIcon ) {
-            return icon == null? defaultIcon: icon;
+        private Icon getIcon(Icon defaultIcon) {
+            return icon == null ? defaultIcon : icon;
         }
-
 
         /**
          * Shows simple message using previously set title, icon and instruction
          */
         public void message() {
-            messageDialog(
-                    parent,
-                    title,
-                    icon,
-                    instruction,
-                    text).setVisible(true);
+            messageDialog(parent, title, icon, instruction, text).setVisible(true);
         }
-
 
         /**
          * Shows simple information message
          */
         public void inform() {
-            messageDialog(
-                    parent,
-                    getTitle( TaskDialog.makeKey("Information")),
-                    getIcon( TaskDialog.StandardIcon.INFO ),
-                    instruction,
-                    text).setVisible(true);
+            TaskDialog td =
+                messageDialog(parent, getTitle(TaskDialog.makeKey("Information")),
+                    getIcon(TaskDialog.StandardIcon.INFO), instruction, text);
+            LOGGER.info("Create td: {}", td);
+            td.setVisible(true);
         }
 
-
         /**
-         *  Shows simple error message
+         * Shows simple error message
          */
         public void error() {
-            messageDialog(
-                parent,
-                getTitle( TaskDialog.makeKey("Error")),
-                getIcon( TaskDialog.StandardIcon.ERROR ),
-                instruction,
-                text).setVisible(true);
+            messageDialog(parent, getTitle(TaskDialog.makeKey("Error")), getIcon(TaskDialog.StandardIcon.ERROR),
+                instruction, text).setVisible(true);
         }
-        
+
         /**
-         *  Shows simple exception message
+         * Shows simple exception message
          */
         public void exception(Throwable ex) {
-            TaskDialog dlg = messageDialog(
-                parent,
-                getTitle( TaskDialog.makeKey("Error")),
-                getIcon( TaskDialog.StandardIcon.ERROR ),
-                instruction,
-                text);
-            
+            TaskDialog dlg =
+                messageDialog(parent, getTitle(TaskDialog.makeKey("Error")), getIcon(TaskDialog.StandardIcon.ERROR),
+                    instruction, text);
+
             String msg = ex.getMessage();
             boolean noMessage = Strings.isEmpty(msg);
-            
+
             JTextArea text = new JTextArea();
             text.setEditable(false);
-            text.setFont( UIManager.getFont("Label.font"));
+            text.setFont(UIManager.getFont("Label.font"));
             text.setText(Strings.stackStraceAsString(ex));
             text.setCaretPosition(0);
 
-            JScrollPane scroller = new JScrollPane( text );
-            scroller.setPreferredSize(new Dimension(400,200));
-            dlg.getDetails().setExpandableComponent( scroller);
+            JScrollPane scroller = new JScrollPane(text);
+            scroller.setPreferredSize(new Dimension(400, 200));
+            dlg.getDetails().setExpandableComponent(scroller);
             dlg.getDetails().setExpanded(noMessage);
 
             dlg.setResizable(true);
@@ -222,85 +223,75 @@ public final class TaskDialogs {
 
         /**
          * Shows simple question
+         * 
          * @return
          */
         public boolean ask() {
-            return questionDialog(
-                    parent,
-                    getTitle( TaskDialog.makeKey("Question")),
-                    getIcon( TaskDialog.StandardIcon.QUESTION ),
-                    instruction,
-                    text).show().equals(StandardCommand.OK);
+            return questionDialog(parent, getTitle(TaskDialog.makeKey("Question")),
+                getIcon(TaskDialog.StandardIcon.QUESTION), instruction, text).show().equals(StandardCommand.OK);
         }
 
         /**
          * Shows simple warning message
+         * 
          * @deprecated use isConfirmed instead
          * @return
          */
         @Deprecated
         public boolean warn() {
-            return questionDialog(
-                    parent,
-                    getTitle( TaskDialog.makeKey("Warning")),
-                    getIcon( TaskDialog.StandardIcon.WARNING ),
-                    instruction,
-                    text).show().equals(StandardCommand.OK);
+            return questionDialog(parent, getTitle(TaskDialog.makeKey("Warning")),
+                getIcon(TaskDialog.StandardIcon.WARNING), instruction, text).show().equals(StandardCommand.OK);
         }
-
 
         /**
          * Shows simple warning message
+         * 
          * @return true if accepted
          */
         public boolean isConfirmed() {
-            return questionDialog(
-                    parent,
-                    getTitle( TaskDialog.makeKey("Warning")),
-                    getIcon( TaskDialog.StandardIcon.WARNING ),
-                    instruction,
-                    text).show().equals(StandardCommand.OK);
+            return questionDialog(parent, getTitle(TaskDialog.makeKey("Warning")),
+                getIcon(TaskDialog.StandardIcon.WARNING), instruction, text).show().equals(StandardCommand.OK);
         }
-
 
         /**
          * Show exception dialog
+         * 
          * @param ex
          */
-        public void showException( Throwable ex ) {
+        public void showException(Throwable ex) {
 
-            TaskDialog dlg = new TaskDialog( parent, getTitle(TaskDialog.makeKey("Exception")));
+            TaskDialog dlg = new TaskDialog(parent, getTitle(TaskDialog.makeKey("Exception")));
 
             String msg = ex.getMessage();
             String className = ex.getClass().getName();
             boolean noMessage = Strings.isEmpty(msg);
 
             if (instruction != null) {
-            	dlg.setInstruction( instruction);
+                dlg.setInstruction(instruction);
             }
             else {
-            	dlg.setInstruction( noMessage? className: msg );
+                dlg.setInstruction(noMessage ? className : msg);
             }
-            
+
             if (text != null) {
-            	dlg.setText(text);
+                dlg.setText(text);
             }
             else {
-            	dlg.setText( noMessage? "": className );
+                dlg.setText(noMessage ? "" : className);
             }
-            
-            dlg.setIcon( getIcon( TaskDialog.StandardIcon.ERROR ));
-            dlg.setCommands( StandardCommand.CANCEL.derive(TaskDialog.makeKey("Close")));
+
+            dlg.setIcon(getIcon(TaskDialog.StandardIcon.ERROR));
+            dlg.setCommands(StandardCommand.CANCEL.derive(TaskDialog.makeKey("Close")));
 
             JTextArea text = new JTextArea();
             text.setEditable(false);
-            text.setFont( UIManager.getFont("Label.font"));
+            text.setFont(UIManager.getFont("Label.font"));
             text.setText(Strings.stackStraceAsString(ex));
             text.setCaretPosition(0);
 
-            JScrollPane scroller = new JScrollPane( text );
-            scroller.setPreferredSize(new Dimension(400,200));
-            dlg.getDetails().setExpandableComponent( scroller);
+            JScrollPane scroller = new JScrollPane(text);
+            scroller.setPreferredSize(new Dimension(400, 200));
+            dlg.getDetails().setExpandableComponent(scroller);
             dlg.getDetails().setExpanded(noMessage);
 
             dlg.setResizable(true);
@@ -313,128 +304,138 @@ public final class TaskDialogs {
 
         /**
          * Simplifies the presentation of choice based on radio buttons
-         * @param defaultChoice initial choice selection
-         * @param choices collection of available choices
+         * 
+         * @param defaultChoice
+         *            initial choice selection
+         * @param choices
+         *            collection of available choices
          * @return selection index or -1 if nothing is selected
          */
-        public int radioChoice( int defaultChoice, List<String> choices ) {
+        public int radioChoice(int defaultChoice, List<String> choices) {
 
-            TaskDialog dlg = questionDialog( parent, getTitle( TaskDialog.makeKey("Choice")), null, instruction, text);
+            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), null, instruction, text);
 
             ButtonGroup bGroup = new ButtonGroup();
             List<ButtonModel> models = new ArrayList<ButtonModel>();
 
             JRadioButton btn;
-            JPanel p = new JPanel( new MigLayout(""));
-            for( String c: choices ) {
+            JPanel p = new JPanel(new MigLayout(""));
+            for (String c : choices) {
                 btn = new JRadioButton(c);
                 btn.setOpaque(false);
-                models.add( btn.getModel());
+                models.add(btn.getModel());
                 bGroup.add(btn);
-                p.add( btn, "dock north");
+                p.add(btn, "dock north");
             }
 
-            if ( defaultChoice >= 0 && defaultChoice < choices.size()) {
+            if (defaultChoice >= 0 && defaultChoice < choices.size()) {
                 bGroup.setSelected(models.get(defaultChoice), true);
             }
             p.setOpaque(false);
 
-            dlg.setIcon( getIcon( TaskDialog.StandardIcon.QUESTION));
+            dlg.setIcon(getIcon(TaskDialog.StandardIcon.QUESTION));
             dlg.setFixedComponent(p);
 
             TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
-            dlg.setCommands( StandardCommand.OK.derive(TaskDialog.makeKey("Select"), twi.getWaitInterval()),
-                             StandardCommand.CANCEL );
+            dlg.setCommands(StandardCommand.OK.derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(),
+                twi.getAutoCloseTimeout()), StandardCommand.CANCEL);
 
-            return dlg.show().equals(StandardCommand.OK)? models.indexOf( bGroup.getSelection()) : -1;
+            return dlg.show().equals(StandardCommand.OK) ? models.indexOf(bGroup.getSelection()) : -1;
 
         }
 
         /**
          * Simplifies the presentation of choice based on radio buttons
-         * @param defaultChoice initial choice selection
-         * @param choices array of available choices
+         * 
+         * @param defaultChoice
+         *            initial choice selection
+         * @param choices
+         *            array of available choices
          * @return selection index or -1 if nothing is selected
          */
-        public int radioChoice( int defaultChoice, String... choices ) {
-            return radioChoice( defaultChoice, Arrays.asList(choices));
+        public int radioChoice(int defaultChoice, String... choices) {
+            return radioChoice(defaultChoice, Arrays.asList(choices));
         }
 
         /**
-         * Simplifies the presentation of choice based on check boxes
-         * Check boxes are wrapped into a scrollable check list if there are more than 7 of them
-         * @param choices All available choices presented
-         * @param defaultSelection choices checked by default 
+         * Simplifies the presentation of choice based on check boxes Check boxes are wrapped into a scrollable check
+         * list if there are more than 7 of them
+         * 
+         * @param choices
+         *            All available choices presented
+         * @param defaultSelection
+         *            choices checked by default
          * @return collection of checked choices
          */
-        public <T> Collection<T> checkChoice( List<T> choices, Collection<T> defaultSelection ) {
+        public <T> Collection<T> checkChoice(List<T> choices, Collection<T> defaultSelection) {
 
-            TaskDialog dlg = questionDialog( parent, getTitle( TaskDialog.makeKey("Choice")), null, instruction, text);
-            
+            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), null, instruction, text);
+
             JList list = new JList();
             CheckList<T> checkList = new CheckList.Builder(list).build();
             checkList.setData(choices);
             checkList.setCheckedItems(defaultSelection);
-            
-            dlg.setIcon( getIcon(TaskDialog.StandardIcon.QUESTION));
-            if ( choices.size() > 7 ) {
-                dlg.setFixedComponent( new JScrollPane(list));    
-            } else {
+
+            dlg.setIcon(getIcon(TaskDialog.StandardIcon.QUESTION));
+            if (choices.size() > 7) {
+                dlg.setFixedComponent(new JScrollPane(list));
+            }
+            else {
                 // blend list color with dialog
                 Color listColor = UIManager.getColor(IContentDesign.COLOR_MESSAGE_BACKGROUND);
                 list.setBackground(listColor);
                 list.setSelectionBackground(listColor);
-                list.setSelectionForeground( list.getForeground());
-                dlg.setFixedComponent(list);    
+                list.setSelectionForeground(list.getForeground());
+                dlg.setFixedComponent(list);
             }
 
             TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
-            dlg.setCommands( StandardCommand.OK.derive(TaskDialog.makeKey("Select"), twi.getWaitInterval()),
-                             StandardCommand.CANCEL );
+            dlg.setCommands(StandardCommand.OK.derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(),
+                twi.getAutoCloseTimeout()), StandardCommand.CANCEL);
 
-            return dlg.show().equals(StandardCommand.OK)? checkList.getCheckedItems() : null;
+            return dlg.show().equals(StandardCommand.OK) ? checkList.getCheckedItems() : null;
 
         }
 
         /**
          * Simplifies the presentation of choice based on command links
-         * @param defaultChoice initial choice selection
-         * @param choices collection of available command links
+         * 
+         * @param defaultChoice
+         *            initial choice selection
+         * @param choices
+         *            collection of available command links
          * @return selection index or -1 if nothing is selected
          */
-        public int choice( final int defaultChoice, List<CommandLink> choices ) {
+        public int choice(final int defaultChoice, List<CommandLink> choices) {
 
             // NOTE: Task dialog has to be created first to initialize resources
             // Should resource initialization be done somewhere else (like design itself)?
-            TaskDialog dlg = questionDialog( 
-                    parent, 
-                    getTitle(TaskDialog.makeKey("Choice")), // localized title 
-                    getIcon(null), // null by default, according to MS ux guidlines 
-                    instruction, 
-                    text);
-            
-            dlg.setCommands( StandardCommand.CANCEL );
+            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), // localized title
+                getIcon(null), // null by default, according to MS ux guidlines
+                instruction, text);
+
+            dlg.setCommands(StandardCommand.CANCEL);
             final CommandLinkButtonGroup bGroup = new CommandLinkButtonGroup();
-            
+
             final List<ButtonModel> models = new ArrayList<ButtonModel>();
             final List<CommandLinkButton> buttons = new ArrayList<CommandLinkButton>();
 
             CommandLinkButton btn;
-            JPanel p = new JPanel( new MigLayout(""));
+            JPanel p = new JPanel(new MigLayout(""));
             p.setOpaque(false);
-            for( CommandLink link: choices ) {
-                btn = new CommandLinkButton(link, TaskDialog.getDesign().getCommandLinkPainter() );
-                models.add( btn.getModel());
-                buttons.add( btn );
+            for (CommandLink link : choices) {
+                btn = new CommandLinkButton(link, TaskDialog.getDesign().getCommandLinkPainter());
+                models.add(btn.getModel());
+                buttons.add(btn);
                 bGroup.add(btn);
-                p.add( btn, "dock north, gapbottom 8");
+                p.add(btn, "dock north, gapbottom 8");
             }
 
-            if ( defaultChoice >= 0 && defaultChoice < choices.size()) {
+            if (defaultChoice >= 0 && defaultChoice < choices.size()) {
                 bGroup.setSelected(models.get(defaultChoice), true);
 
                 // make sure that selected button is focused
-                p.addAncestorListener( new AncestorAdapter() {
+                p.addAncestorListener(new AncestorAdapter() {
 
                     @Override
                     public void ancestorAdded(AncestorEvent event) {
@@ -445,49 +446,53 @@ public final class TaskDialogs {
             }
 
             dlg.setFixedComponent(p);
-            return choices.indexOf( dlg.show() );
+            return choices.indexOf(dlg.show());
 
         }
 
         /**
          * Simplifies the presentation of choice based on command links
-         * @param defaultChoice initial choice selection
-         * @param choices array of available command links
+         * 
+         * @param defaultChoice
+         *            initial choice selection
+         * @param choices
+         *            array of available command links
          * @return selection index or -1 if nothing is selected
          */
 
-        public int choice( int defaultChoice, CommandLink... choices ) {
-            return choice( defaultChoice, Arrays.asList(choices));
+        public int choice(int defaultChoice, CommandLink... choices) {
+            return choice(defaultChoice, Arrays.asList(choices));
         }
 
         /**
          * Shows simple input dialog with one JFormattedTextField.
+         * 
          * @param <T>
          * @param defaultValue
          * @return edited value or null if dialog was canceled
          */
         @SuppressWarnings("unchecked")
-        public <T> T input( T defaultValue ) {
+        public <T> T input(T defaultValue) {
 
-            TaskDialog dlg = questionDialog( parent, getTitle( TaskDialog.makeKey("Input")), null, instruction, text);
-            dlg.setIcon( getIcon( TaskDialog.StandardIcon.INFO ));
+            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Input")), null, instruction, text);
+            dlg.setIcon(getIcon(TaskDialog.StandardIcon.INFO));
 
             JFormattedTextField tfInput = new JFormattedTextField();
-            tfInput.setColumns( inputColumns == null? 25: inputColumns );
-            tfInput.setValue( defaultValue );
-            dlg.setFixedComponent( tfInput );
+            tfInput.setColumns(inputColumns == null ? 25 : inputColumns);
+            tfInput.setValue(defaultValue);
+            dlg.setFixedComponent(tfInput);
 
-            dlg.setCommands( StandardCommand.OK, StandardCommand.CANCEL );
+            dlg.setCommands(StandardCommand.OK, StandardCommand.CANCEL);
 
-            return (T) (dlg.show().equals(StandardCommand.OK)? tfInput.getValue(): null);
+            return (T) (dlg.show().equals(StandardCommand.OK) ? tfInput.getValue() : null);
 
         }
 
     }
 
-
     /**
      * Creates task dialog builder
+     * 
      * @return
      */
     public static TaskDialogBuilder build() {
@@ -496,155 +501,196 @@ public final class TaskDialogs {
 
     /**
      * Creates task dialog builder
-     * @param instruction instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
+     * 
+     * @param instruction
+     *            instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
      * @param text
      * @return
      */
-    public static TaskDialogBuilder build( Window parent, String instruction, String text) {
-//        TaskDialogBuilder builder = new TaskDialogBuilder();
-//        builder.parent( parent );
-//        builder.instruction(instruction);
-//        builder.text(text);
-//        return builder;
+    public static TaskDialogBuilder build(Window parent, String instruction, String text) {
+        // TaskDialogBuilder builder = new TaskDialogBuilder();
+        // builder.parent( parent );
+        // builder.instruction(instruction);
+        // builder.text(text);
+        // return builder;
         return build().parent(parent).instruction(instruction).text(text);
     }
 
     /**
      * Shows simple information message
-     * @param instruction instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
+     * 
+     * @param instruction
+     *            instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
      * @param text
      */
-    public static void inform( Window parent, String instruction, String text ) {
-        build( parent, instruction, text ).inform();
+    public static void inform(Window parent, String instruction, String text) {
+        build(parent, instruction, text).inform();
     }
 
     /**
      * Shows simple error message
-     * @param instruction instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
+     * 
+     * @param instruction
+     *            instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
      * @param text
      */
-    public static void error( Window parent, String instruction, String text ) {
-        build( parent, instruction, text ).error();
+    public static void error(Window parent, String instruction, String text) {
+        build(parent, instruction, text).error();
     }
 
     /**
      * Shows simple question
-     * @param instruction instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
+     * 
+     * @param instruction
+     *            instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
      * @param text
      * @return
      */
-    public static boolean ask( Window parent, String instruction, String text ) {
-        return build( parent, instruction, text ).ask();
+    public static boolean ask(Window parent, String instruction, String text) {
+        return build(parent, instruction, text).ask();
     }
 
     /**
      * Shows simple warning message
+     * 
      * @deprecated use isConfirmed instead
-     * @param instruction instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
+     * @param instruction
+     *            instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
      * @param text
      * @return
      */
     @Deprecated()
-    public static boolean warn( Window parent, String instruction, String text ) {
-        return build( parent, instruction, text ).warn();
+    public static boolean warn(Window parent, String instruction, String text) {
+        return build(parent, instruction, text).warn();
     }
 
     /**
      * Shows simple warning message
-     * @param instruction instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
+     * 
+     * @param instruction
+     *            instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
      * @param text
      * @return true if accepted
      */
-    public static boolean isConfirmed( Window parent, String instruction, String text ) {
-        return build( parent, instruction, text ).isConfirmed();
+    public static boolean isConfirmed(Window parent, String instruction, String text) {
+        return build(parent, instruction, text).isConfirmed();
     }
 
     /**
      * Shows exception with stack trace as expandable component.
+     * 
      * @param ex
      */
-    public static void showException( Throwable ex ) {
+    public static void showException(Throwable ex) {
         build().showException(ex);
     }
 
     /**
      * Simplifies the presentation of choice based on radio buttons
-     * @param instruction instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
+     * 
+     * @param instruction
+     *            instruction text. Wait interval can be added at the end. i.e. "@@10" will wait for 10 sec
      * @param text
-     * @param defaultChoice initial choice selection
-     * @param choices collection of available choices
+     * @param defaultChoice
+     *            initial choice selection
+     * @param choices
+     *            collection of available choices
      * @return selection index or -1 if nothing is selected
      */
-    public static final int radioChoice( Window parent, String instruction, String text, int defaultChoice, List<String> choices ) {
+    public static final int radioChoice(
+        Window parent, String instruction, String text, int defaultChoice, List<String> choices) {
         return build(parent, instruction, text).radioChoice(defaultChoice, choices);
     }
 
-
-
     /**
      * Simplifies the presentation of choice based on radio buttons
+     * 
      * @param instruction
      * @param text
      * @param defaultChoice
      * @param choices
      * @return
      */
-    public static final int radioChoice( Window parent, String instruction, String text, int defaultChoice, String... choices ) {
-        return build( parent, instruction, text).radioChoice(defaultChoice, choices);
+    public static final int radioChoice(
+        Window parent, String instruction, String text, int defaultChoice, String... choices) {
+        return build(parent, instruction, text).radioChoice(defaultChoice, choices);
     }
 
     /**
      * Produces choice dialog based on command links. Task dialog commands are suppressed.
+     * 
      * @param instruction
      * @param text
-     * @param defaultChoice command link index used as default choice. -1 is none is required
-     * @param choices collection of command links
+     * @param defaultChoice
+     *            command link index used as default choice. -1 is none is required
+     * @param choices
+     *            collection of command links
      * @return
      */
-    public static final int choice( Window parent, String instruction, String text, int defaultChoice, List<CommandLink> choices ) {
-        return build(parent, instruction,text).choice( defaultChoice, choices );
+    public static final int choice(
+        Window parent, String instruction, String text, int defaultChoice, List<CommandLink> choices) {
+        return build(parent, instruction, text).choice(defaultChoice, choices);
     }
 
     /**
      * Produces choice dialog based on command links. Task dialog commands are suppressed.
+     * 
      * @param instruction
      * @param text
-     * @param defaultChoice command link index used as default choice. -1 is none is required
-     * @param choices array of command links
+     * @param defaultChoice
+     *            command link index used as default choice. -1 is none is required
+     * @param choices
+     *            array of command links
      * @return
      */
-    public static final int choice( Window parent, String instruction, String text, int defaultChoice, CommandLink... choices ) {
-        return build(parent, instruction,text).choice( defaultChoice, choices );
+    public static final int choice(
+        Window parent, String instruction, String text, int defaultChoice, CommandLink... choices) {
+        return build(parent, instruction, text).choice(defaultChoice, choices);
     }
 
     /**
      * Shows simple input dialog with one JFormattedTextField.
+     * 
      * @param <T>
      * @param defaultValue
      * @return edited value or null if dialog was canceled
      */
-    public static final <T> T input( Window parent, String instruction, String text, T defaultValue ) {
-        return build(parent, instruction,text).inputColumns(25).input( defaultValue );
+    public static final <T> T input(Window parent, String instruction, String text, T defaultValue) {
+        return build(parent, instruction, text).inputColumns(25).input(defaultValue);
     }
 
-
- /*----------------------------------------------------------------------------------------------------------*/
+    /*----------------------------------------------------------------------------------------------------------*/
 
     private static class TextWithWaitInterval {
 
         String text;
+
         int waitInterval = 0;
 
-        public TextWithWaitInterval( String text ) {
+        int autoCloseTimeout = 0;
+
+        public TextWithWaitInterval(String text) {
 
             this.text = text;
             int prefixPos = text.indexOf(TaskDialog.I18N_PREFIX);
-            if ( prefixPos >= 0) {
+            if (prefixPos >= 0) {
                 try {
-                    waitInterval = Integer.valueOf( text.substring( prefixPos + TaskDialog.I18N_PREFIX.length()));
-                } catch( Throwable ex ) {
+                    waitInterval = Integer.valueOf(text.substring(prefixPos + TaskDialog.I18N_PREFIX.length()));
+                }
+                catch (Throwable ex) {
                     waitInterval = 0;
                 }
+
+                int posAutoClose =
+                    text.indexOf(TaskDialog.AUTOCLOSE_PREFIX, prefixPos + TaskDialog.I18N_PREFIX.length());
+                try {
+                    autoCloseTimeout =
+                        Integer.valueOf(text.substring(posAutoClose + TaskDialog.AUTOCLOSE_PREFIX.length()));
+                }
+                catch (Throwable ex) {
+                    autoCloseTimeout = 0;
+                }
+
                 this.text = text.substring(0, prefixPos);
             }
 
@@ -657,49 +703,55 @@ public final class TaskDialogs {
         public int getWaitInterval() {
             return waitInterval;
         }
-    }
 
+        public int getAutoCloseTimeout() {
+            return autoCloseTimeout;
+        }
+    }
 
     /**
      * Creates Task dialog using provided attributes and one "Close" button
+     * 
      * @param title
      * @param icon
      * @param instruction
      * @param text
      * @return
      */
-    private static TaskDialog messageDialog( Window parent, String title, Icon icon, String instruction, String text ) {
+    private static TaskDialog messageDialog(Window parent, String title, Icon icon, String instruction, String text) {
 
         TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
 
         TaskDialog dlg = new TaskDialog(parent, title);
-        dlg.setInstruction( twi.getText() );
-        dlg.setText( text );
-        dlg.setIcon( icon );
-        dlg.setCommands( StandardCommand.CANCEL.derive(TaskDialog.makeKey("Close"), twi.getWaitInterval()));
+        dlg.setInstruction(twi.getText());
+        dlg.setText(text);
+        dlg.setIcon(icon);
+        dlg.setCommands(StandardCommand.CANCEL.derive(TaskDialog.makeKey("Close"), twi.getWaitInterval(),
+            twi.getAutoCloseTimeout()));
         return dlg;
 
     }
 
     /**
      * Creates Task dialog using provided attributes and "Yes" and "No" buttons
+     * 
      * @param title
      * @param icon
      * @param instruction
      * @param text
      * @return
      */
-    private static TaskDialog questionDialog( Window parent, String title, Icon icon, String instruction, String text ) {
+    private static TaskDialog questionDialog(Window parent, String title, Icon icon, String instruction, String text) {
 
         TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
 
         TaskDialog dlg = new TaskDialog(parent, title);
-        dlg.setInstruction( twi.getText() );
-        dlg.setText( text );
-        dlg.setIcon( icon );
+        dlg.setInstruction(twi.getText());
+        dlg.setText(text);
+        dlg.setIcon(icon);
         dlg.setCommands(
-            StandardCommand.OK.derive(TaskDialog.makeKey("Yes"), twi.getWaitInterval()),
-            StandardCommand.CANCEL.derive(TaskDialog.makeKey("No")) );
+            StandardCommand.OK.derive(TaskDialog.makeKey("Yes"), twi.getWaitInterval(), twi.getAutoCloseTimeout()),
+            StandardCommand.CANCEL.derive(TaskDialog.makeKey("No")));
         return dlg;
 
     }

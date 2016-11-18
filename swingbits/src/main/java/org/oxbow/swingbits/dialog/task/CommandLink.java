@@ -39,17 +39,19 @@ import org.oxbow.swingbits.dialog.task.TaskDialog.CommandTag;
 public class CommandLink implements TaskDialog.Command {
 
     private final String instruction;
+
     private final String text;
+
     private final Icon icon;
 
-    public CommandLink( Icon icon, String instruction, String text ) {
+    public CommandLink(Icon icon, String instruction, String text) {
         this.instruction = instruction;
         this.text = text;
         this.icon = icon;
     }
-    
-    public CommandLink( String instruction, String text ) {
-        this( null, instruction, text );
+
+    public CommandLink(String instruction, String text) {
+        this(null, instruction, text);
     }
 
     public String getInstruction() {
@@ -59,13 +61,11 @@ public class CommandLink implements TaskDialog.Command {
     public String getText() {
         return text;
     };
-    
+
     public Icon getIcon() {
         return icon;
     }
 
-    
-    
     @Override
     public String getTitle() {
         return instruction;
@@ -99,6 +99,11 @@ public class CommandLink implements TaskDialog.Command {
     @Override
     public KeyStroke getKeyStroke() {
         return null;
+    }
+
+    @Override
+    public int getAutoCloseTimeout() {
+        return 0;
     }
 
 }

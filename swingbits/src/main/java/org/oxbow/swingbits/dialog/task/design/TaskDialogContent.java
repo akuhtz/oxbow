@@ -54,37 +54,53 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 
-import net.miginfocom.swing.MigLayout;
-
 import org.oxbow.swingbits.dialog.task.IContentDesign;
 import org.oxbow.swingbits.dialog.task.TaskDialog;
 import org.oxbow.swingbits.util.Markup;
 import org.oxbow.swingbits.util.Strings;
 import org.oxbow.swingbits.util.swing.Icons;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.miginfocom.swing.MigLayout;
 
 public class TaskDialogContent extends JPanel implements TaskDialog.Details, TaskDialog.Footer {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskDialogContent.class);
+
     private static final long serialVersionUID = 1L;
 
-    final JLabel lbIcon        = hidden( new JLabel());
-    final JLabel lbInstruction = hidden( new JLabel());
-    final JLabel lbText        = hidden( new JLabel());
-    final JPanel pExpandable   = hidden( new JPanel( new BorderLayout()));
-    final JPanel pComponent    = hidden( new JPanel( new BorderLayout()));
+    final JLabel lbIcon = hidden(new JLabel());
 
-    final DetailsToggleButton cbDetails = hidden( new DetailsToggleButton());
-    final JCheckBox cbFooterCheck = hidden( new JCheckBox());
-    final JLabel lbFooter = hidden( new JLabel());
-    final JPanel pCommands = new JPanel( new MigLayout( "ins 0, nogrid, fillx, aligny 100%, gapy unrel" ));
-    final JPanel pFooter = hidden( new JPanel( new MigLayout()));
-    final JPanel pCommandPane = new JPanel( new MigLayout());
+    final JLabel lbInstruction = hidden(new JLabel());
+
+    final JLabel lbText = hidden(new JLabel());
+
+    final JPanel pExpandable = hidden(new JPanel(new BorderLayout()));
+
+    final JPanel pComponent = hidden(new JPanel(new BorderLayout()));
+
+    final DetailsToggleButton cbDetails = hidden(new DetailsToggleButton());
+
+    final JCheckBox cbFooterCheck = hidden(new JCheckBox());
+
+    final JLabel lbFooter = hidden(new JLabel());
+
+    final JPanel pCommands = new JPanel(new MigLayout("ins 0, nogrid, fillx, aligny 100%, gapy unrel"));
+
+    final JPanel pFooter = hidden(new JPanel(new MigLayout()));
+
+    final JPanel pCommandPane = new JPanel(new MigLayout());
 
     private final String[] detailsText = new String[2];
+
     private String instruction = null;
+
     private String text;
+
     private boolean alwaysExpanded;
 
-    private static <T extends JComponent> T hidden( T c ) {
+    private static <T extends JComponent> T hidden(T c) {
         c.setVisible(false);
         return c;
     }
@@ -94,69 +110,68 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
         pExpandable.setOpaque(false);
         pComponent.setOpaque(false);
 
-        cbDetails.addItemListener( new ItemListener() {
+        cbDetails.addItemListener(new ItemListener() {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
 
                 final boolean selected = e.getStateChange() == ItemEvent.SELECTED;
 
-                cbDetails.setText( selected? getExpandedLabel():getCollapsedLabel() );
-                SwingUtilities.invokeLater( new Runnable(){
+                cbDetails.setText(selected ? getExpandedLabel() : getCollapsedLabel());
+                SwingUtilities.invokeLater(new Runnable() {
 
                     @Override
                     public void run() {
                         pExpandable.setVisible(selected);
                         SwingUtilities.getWindowAncestor(TaskDialogContent.this).pack();
-                    }}
-                );
+                    }
+                });
 
             }
         });
 
-
     }
 
+    public void setInstruction(String instruction) {
+        this.instruction = instruction;
 
-    public void setInstruction( String instruction ) {
-           this.instruction = instruction;
-
-           boolean visible = instruction != null && instruction.trim().length() > 0;
-           lbInstruction.setVisible(visible);
-           if (visible) lbInstruction.setText( Markup.toHTML(instruction) );
+        boolean visible = instruction != null && instruction.trim().length() > 0;
+        lbInstruction.setVisible(visible);
+        if (visible)
+            lbInstruction.setText(Markup.toHTML(instruction));
     }
 
     public String getInstruction() {
         return instruction;
     }
-    
-    public void setCommands( Set<? extends TaskDialog.Command> commands, boolean lockButtonSize ) {
+
+    public void setCommands(Set<? extends TaskDialog.Command> commands, boolean lockButtonSize) {
 
         pCommands.removeAll();
 
-        String group = lockButtonSize? "sgx commands, ": "";
+        String group = lockButtonSize ? "sgx commands, " : "";
         TaskDialog owner = getOwner();
-        for( final TaskDialog.Command c: commands) {
-            String tag = c.getTag() == null? "": c.getTag().toString();
-            JButton button = new JButton( new CommandAction(c, owner) );
-            pCommands.add( button, group + "aligny top, " + tag  );
+        for (final TaskDialog.Command c : commands) {
+            String tag = c.getTag() == null ? "" : c.getTag().toString();
+            JButton button = new JButton(new CommandAction(c, owner));
+            pCommands.add(button, group + "aligny top, " + tag);
         }
 
     }
-    
+
     public boolean isCommandsVisible() {
         return pCommandPane.isVisible();
     }
 
-    public void setCommandsVisible( boolean visible ) {
+    public void setCommandsVisible(boolean visible) {
         pCommandPane.setVisible(visible);
     }
 
-    public void setMainText( String text ) {
-           this.text = text;
+    public void setMainText(String text) {
+        this.text = text;
         boolean isEmtpy = Strings.isEmpty(text);
-           lbText.setText( Markup.toHTML(text) );
-           lbText.setVisible( !isEmtpy );
+        lbText.setText(Markup.toHTML(text));
+        lbText.setVisible(!isEmtpy);
     }
 
     public String getMainText() {
@@ -169,8 +184,8 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
     @Override
     public String getCollapsedLabel() {
-        return Strings.isEmpty( detailsText[0])?
-                getOwner().getString( UIManager.getString(IContentDesign.TEXT_MORE_DETAILS)): detailsText[0];
+        return Strings.isEmpty(detailsText[0])
+            ? getOwner().getString(UIManager.getString(IContentDesign.TEXT_MORE_DETAILS)) : detailsText[0];
     }
 
     @Override
@@ -180,8 +195,8 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
     @Override
     public String getExpandedLabel() {
-        return Strings.isEmpty(detailsText[1])?
-                getOwner().getString(UIManager.getString(IContentDesign.TEXT_FEWER_DETAILS)): detailsText[1];
+        return Strings.isEmpty(detailsText[1])
+            ? getOwner().getString(UIManager.getString(IContentDesign.TEXT_FEWER_DETAILS)) : detailsText[1];
     }
 
     @Override
@@ -191,14 +206,15 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
     @Override
     public JComponent getExpandableComponent() {
-        return pExpandable.getComponentCount() == 0? null: (JComponent)pExpandable.getComponent(0);
+        return pExpandable.getComponentCount() == 0 ? null : (JComponent) pExpandable.getComponent(0);
     }
 
     @Override
     public void setExpandableComponent(JComponent c) {
-         pExpandable.removeAll();
-         if ( c != null ) pExpandable.add( c );
-         cbDetails.setVisible(c != null && !alwaysExpanded);
+        pExpandable.removeAll();
+        if (c != null)
+            pExpandable.add(c);
+        cbDetails.setVisible(c != null && !alwaysExpanded);
     }
 
     @Override
@@ -208,13 +224,13 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
     @Override
     public void setExpanded(boolean expanded) {
-        cbDetails.setSelected( !expanded );
-        cbDetails.setSelected( expanded );
+        cbDetails.setSelected(!expanded);
+        cbDetails.setSelected(expanded);
         pExpandable.setVisible(expanded);
     }
-    
+
     @Override
-    public void setAlwaysExpanded( boolean alwaysExpanded ) {
+    public void setAlwaysExpanded(boolean alwaysExpanded) {
         if (alwaysExpanded) {
             setExpanded(true);
         }
@@ -226,7 +242,7 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
     public boolean isAlwaysExpanded() {
         return alwaysExpanded;
     }
-    
+
     @Override
     public String getCheckBoxText() {
         return cbFooterCheck.getText();
@@ -234,9 +250,8 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
     private Icon icon;
 
-
-    public void setMainIcon( Icon icon ) {
-        lbIcon.setVisible( icon != null );
+    public void setMainIcon(Icon icon) {
+        lbIcon.setVisible(icon != null);
         lbIcon.setIcon(icon);
     }
 
@@ -252,7 +267,7 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
     @Override
     public void setIcon(Icon icon) {
         this.icon = icon; // stored to preserve actual size
-        lbFooter.setIcon( Icons.scale(icon, 16, 16));
+        lbFooter.setIcon(Icons.scale(icon, 16, 16));
     }
 
     @Override
@@ -263,19 +278,20 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
     @Override
     public void setText(String text) {
         boolean footerLabelVisible = !Strings.isEmpty(text);
-        pFooter.setVisible( footerLabelVisible );
+        pFooter.setVisible(footerLabelVisible);
         lbFooter.setVisible(footerLabelVisible);
         lbFooter.setText(Markup.toHTML(text));
     }
 
-    public void setComponent( JComponent c ) {
+    public void setComponent(JComponent c) {
         pComponent.removeAll();
-        if ( c != null ) pComponent.add( c );
+        if (c != null)
+            pComponent.add(c);
         pComponent.setVisible(c != null);
     }
 
     public JComponent getComponent() {
-        return pComponent.getComponentCount() == 0? null: (JComponent)pComponent.getComponent(0);
+        return pComponent.getComponentCount() == 0 ? null : (JComponent) pComponent.getComponent(0);
     }
 
     @Override
@@ -290,8 +306,8 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
     @Override
     public void setCheckBoxText(String text) {
-        cbFooterCheck.setVisible( !Strings.isEmpty( text ) );
-        cbFooterCheck.setText( text == null? "": text );
+        cbFooterCheck.setVisible(!Strings.isEmpty(text));
+        cbFooterCheck.setText(text == null ? "" : text);
     }
 
     class CommandAction extends AbstractAction implements TaskDialog.ValidationListener {
@@ -299,47 +315,60 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
         private static final long serialVersionUID = 1L;
 
         private final TaskDialog.Command command;
+
         private final TaskDialog dlg;
+
         private Timer timer;
+
         private int counter;
 
-        public CommandAction( TaskDialog.Command command, TaskDialog dlg ) {
-            super( dlg.getString( command.getTitle()) );
+        public CommandAction(TaskDialog.Command command, final TaskDialog dlg) {
+            super(dlg.getString(command.getTitle()));
 
             this.command = command;
             this.dlg = dlg;
             this.counter = command.getWaitInterval();
-            
+            if (counter == 0) {
+                // fallback to check the auto close timeout
+                this.counter = command.getAutoCloseTimeout();
+            }
+
             // setup default keystrokes
             KeyStroke keyStroke = command.getKeyStroke();
-            if ( keyStroke != null ) {
+            if (keyStroke != null) {
                 String actionID = "TaskDialog.Command." + UUID.randomUUID().toString();
-                TaskDialogContent.this.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(keyStroke,actionID);
-                TaskDialogContent.this.getActionMap().put(actionID,this);
+                TaskDialogContent.this.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(keyStroke, actionID);
+                TaskDialogContent.this.getActionMap().put(actionID, this);
             }
-            
-            
+
             dlg.addValidationListener(this);
 
-            putValue( Action.NAME, getTitle() );
+            putValue(Action.NAME, getTitle());
 
-            if ( counter > 0 ) {
+            if (counter > 0) {
 
-                setEnabled( false );
+                if (command.getWaitInterval() > 0) {
+                    setEnabled(false);
+                }
 
                 timer = new Timer(1000, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        LOGGER.info("Event fired from timer: {}", timer);
                         tick();
                     }
 
                 });
+                timer.setCoalesce(false);
 
                 dlg.addPropertyListener("visible", new PropertyChangeListener() {
 
                     @Override
                     public void propertyChange(PropertyChangeEvent e) {
-                        if ( Boolean.TRUE.equals(e.getNewValue())) {
+                        if (Boolean.TRUE.equals(e.getNewValue())) {
+                            LOGGER.info("The property visible has changed, e.newValue: {}, visible: {}",
+                                e.getNewValue(), dlg.isVisible());
+                            LOGGER.info("Start timer: {}", timer);
                             timer.start();
                         }
                     }
@@ -347,39 +376,55 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
             }
 
         }
-        
+
         @Override
         public void validationFinished(boolean validationResult) {
-            
-            setEnabled( command.isEnabled(validationResult) );
-            
+
+            setEnabled(command.isEnabled(validationResult));
+
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            dlg.setResult( command );
-            if ( command.isClosing() ) dlg.setVisible(false);
+            dlg.setResult(command);
+            if (command.isClosing()) {
+                dlg.setVisible(false);
+
+                if (timer != null) {
+                    try {
+                        LOGGER.info("Stop the timer after hide dialog: {}", timer);
+                        timer.stop();
+                    }
+                    catch (Exception ex) {
+                        LOGGER.warn("Stop timer failed.", ex);
+                    }
+                }
+            }
 
         }
 
         private String getTitle() {
-            String title = dlg.getString( command.getTitle());
-            return  counter > 0? String.format( "%s (%d)", title, counter): title;
+            String title = dlg.getString(command.getTitle());
+            return counter > 0 ? String.format("%s (%d)", title, counter) : title;
         }
 
         private void tick() {
-            if ( --counter <= 0 ) {
+            if (--counter <= 0) {
+                LOGGER.info("Timeout reached, stop the timer: {}", timer);
                 timer.stop();
+
+                // TODO added by akuhtz
+                if (command.getAutoCloseTimeout() > 0) {
+                    actionPerformed(null);
+                }
             }
-            putValue( Action.NAME, getTitle() );
-            setEnabled(counter <= 0);
+            putValue(Action.NAME, getTitle());
+
+            // TODO changed by kuz
+            setEnabled(counter <= 0 || command.getAutoCloseTimeout() > 0);
         }
 
     }
-    
-    
+
 }
-
-
-

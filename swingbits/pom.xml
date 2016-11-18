@@ -13,7 +13,8 @@
     
     <name>Oxbow Project</name>
     <description>A collection of useful components and utilities for Java Swing Toolkit</description>
-    <url>https://github.com/eugener/oxbow</url>
+    <url>https://github.com/akuhtz/oxbow</url>
+    
     <licenses>
         <license>
             <name>The 3-Clause BSD License</name>
@@ -36,8 +37,8 @@
         <url>https://github.com/akuhtz/oxbow.git</url>
         <connection>scm:git:https://github.com/akuhtz/oxbow.git</connection>
         <developerConnection>scm:git:https://github.com/akuhtz/oxbow.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <distributionManagement>
         <snapshotRepository>
@@ -50,12 +51,28 @@
         </repository>
     </distributionManagement>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>http://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>com.miglayout</groupId>
             <artifactId>miglayout</artifactId>
             <version>3.7.4</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.slf4j</groupId>
+        	<artifactId>slf4j-api</artifactId>
+        	<version>1.7.21</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
