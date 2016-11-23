@@ -372,8 +372,17 @@ public class TaskDialog extends SwingBean {
             return 0;
         }
 
+        @Override
         public boolean isEnabled(boolean validationResult) {
             return tag.isEnabled(validationResult);
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+        public void setEnabled(boolean validationResult) {
+            tag.isEnabled(validationResult);
         }
 
         @Override
@@ -477,8 +486,17 @@ public class TaskDialog extends SwingBean {
             return command.getWaitInterval();
         }
 
+        @Override
         public boolean isEnabled(boolean validationResult) {
             return command.isEnabled(validationResult);
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+        public void setEnabled(boolean validationResult) {
+            command.isEnabled(validationResult);
         }
 
         @Override
@@ -681,34 +699,33 @@ public class TaskDialog extends SwingBean {
                 content.setCommands(commands, getDesign().isCommandButtonSizeLocked());
             }
 
-            // because the PCE is fired after this method returns we cannot run the
-            // show dialog directly
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    LOGGER.info("Run the set action, visible: {}", visible);
-                    if (visible) {
-                        dlg.pack();
+        }
 
-                        // location is set relative to currently active window or dialog owner if no active window found
-                        // this way task dialog stays on the same monitor as it's owner
-                        Window window = dlg.getOwner();
-                        if (window == null) {
-                            window = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
-                            if (window != null && !window.isDisplayable())
-                                window = null;
-                        }
-                        dlg.setLocationRelativeTo(window);
-                        dlg.setVisible(true);
-                    }
-                    else {
-                        LOGGER.info("Hide the task dialog.");
-                        dlg.setVisible(false);
-                        dlg.dispose(); // releases native resources
-                        LOGGER.info("Hide the task dialog finished.");
-                    }
+        @Override
+        protected void postSetAction(final Boolean visible) {
+
+            LOGGER.debug("Run the set action, visible: {}", visible);
+            if (visible) {
+                LOGGER.info("Show the task dialog.");
+                dlg.pack();
+
+                // location is set relative to currently active window or dialog owner if no active window found
+                // this way task dialog stays on the same monitor as it's owner
+                Window window = dlg.getOwner();
+                if (window == null) {
+                    window = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+                    if (window != null && !window.isDisplayable())
+                        window = null;
                 }
-            });
-
+                dlg.setLocationRelativeTo(window);
+                dlg.setVisible(true);
+            }
+            else {
+                LOGGER.info("Hide the task dialog.");
+                dlg.setVisible(false);
+                dlg.dispose(); // releases native resources
+                LOGGER.info("Hide the task dialog finished.");
+            }
         }
     };
 
