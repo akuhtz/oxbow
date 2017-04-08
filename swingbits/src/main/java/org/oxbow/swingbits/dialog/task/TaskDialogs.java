@@ -62,6 +62,10 @@ import org.slf4j.LoggerFactory;
 
 import net.miginfocom.swing.MigLayout;
 
+import net.miginfocom.layout.CC;
+import net.miginfocom.layout.LC;
+import net.miginfocom.swing.MigLayout;
+
 /**
  *
  * A set of methods to simplify creation of task dialogs
@@ -421,15 +425,16 @@ public final class TaskDialogs {
             final List<CommandLinkButton> buttons = new ArrayList<CommandLinkButton>();
 
             CommandLinkButton btn;
-            JPanel p = new JPanel(new MigLayout(""));
-            p.setOpaque(false);
-            for (CommandLink link : choices) {
-                btn = new CommandLinkButton(link, TaskDialog.getDesign().getCommandLinkPainter());
-                models.add(btn.getModel());
-                buttons.add(btn);
-                bGroup.add(btn);
-                p.add(btn, "dock north, gapbottom 8");
-            }
+			final JPanel p = new JPanel(new MigLayout(new LC().flowY().noGrid()));
+			p.setOpaque(false);
+			for (final CommandLink link : choices)
+			{
+				btn = new CommandLinkButton(link, TaskDialog.getDesign().getCommandLinkPainter());
+				models.add(btn.getModel());
+				buttons.add(btn);
+				bGroup.add(btn);
+				p.add(btn, new CC().gapBottom("8"));
+			}
 
             if (defaultChoice >= 0 && defaultChoice < choices.size()) {
                 bGroup.setSelected(models.get(defaultChoice), true);
