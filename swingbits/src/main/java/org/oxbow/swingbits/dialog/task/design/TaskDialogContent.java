@@ -360,17 +360,22 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
                 });
                 timer.setCoalesce(false);
+                LOGGER.info("Created new timer instance: {}", timer);
 
                 dlg.addPropertyListener("visible", new PropertyChangeListener() {
 
                     @Override
                     public void propertyChange(PropertyChangeEvent e) {
+                        LOGGER
+                            .info("The property visible has changed, e.newValue: {}, visible: {}", e.getNewValue(),
+                                dlg.isVisible());
                         if (Boolean.TRUE.equals(e.getNewValue())) {
-                            LOGGER
-                                .info("The property visible has changed, e.newValue: {}, visible: {}", e.getNewValue(),
-                                    dlg.isVisible());
                             LOGGER.info("Start timer: {}", timer);
                             timer.start();
+                        }
+                        else {
+                            LOGGER.info("Stop timer: {}", timer);
+                            timer.stop();
                         }
                     }
                 });

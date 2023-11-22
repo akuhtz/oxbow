@@ -722,6 +722,7 @@ public class TaskDialog extends SwingBean {
             }
             else {
                 LOGGER.info("Hide the task dialog.");
+
                 dlg.setVisible(false);
                 dlg.dispose(); // releases native resources
                 LOGGER.info("Hide the task dialog finished.");
