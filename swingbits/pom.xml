@@ -15,6 +15,10 @@
     <description>A collection of useful components and utilities for Java Swing Toolkit</description>
     <url>https://github.com/akuhtz/oxbow</url>
     
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
     <licenses>
         <license>
             <name>The 3-Clause BSD License</name>
@@ -25,7 +29,6 @@
     <developers>
         <developer>
             <name>Eugene Ryzhikov</name>
-            <email>eryzhikov@hotmail.com</email>
             <roles>
                 <role>author</role>
                 <role>developer</role>
@@ -110,10 +113,6 @@
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
-                                <!-- add this to disable checking -->
-                                <configuration>
-                                    <additionalparam>${javadoc.opts}</additionalparam>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -121,8 +120,10 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <configuration>
-                            <passphrase>${gpg.passphrase}</passphrase>
-                            <useAgent>${gpg.useagent}</useAgent>
+							<gpgArguments>
+								<arg>--pinentry-mode</arg>
+								<arg>loopback</arg>
+							</gpgArguments>
                         </configuration>
                         <executions>
                             <execution>
@@ -137,15 +138,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>doclint-java8-disable</id>
-            <activation>
-                <jdk>[1.8,)</jdk>
-            </activation>
-            <properties>
-                <javadoc.opts>-Xdoclint:none</javadoc.opts>
-            </properties>
-        </profile>
     </profiles>
 
     <build>
@@ -154,42 +146,42 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.5.1</version>
+                    <version>3.11.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.2</version>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.6</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.3.0</version>
                 </plugin>
     
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.4</version>
+                    <version>3.6.2</version>
                     <!-- add this to disable checking under JDK8 -->
                     <configuration>
-                        <additionalparam>${javadoc.opts}</additionalparam>
+                        <doclint>none</doclint>
                     </configuration>
                 </plugin>    
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>3.0.1</version>
                     <configuration>
                         <useReleaseProfile>false</useReleaseProfile>
                         <preparationGoals>clean install</preparationGoals>
@@ -201,12 +193,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.19.1</version>
+                    <version>3.2.2</version>
                 </plugin>
                 
             </plugins>
@@ -216,7 +208,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -234,7 +225,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-				<version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -261,5 +251,4 @@
             </plugin>-->
         </plugins>
     </build>
-
 </project>
