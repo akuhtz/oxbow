@@ -829,6 +829,14 @@ public class TaskDialog extends SwingBean {
         dlg.setModalityType(modalityType);
     }
 
+    public boolean iAlwaysOnTop() {
+        return dlg.isAlwaysOnTop();
+    }
+
+    public void setAlwaysOnTop(boolean alwaysOnTop) {
+        dlg.setAlwaysOnTop(alwaysOnTop);
+    }
+
     public boolean isResizable() {
         return dlg.isResizable();
     }

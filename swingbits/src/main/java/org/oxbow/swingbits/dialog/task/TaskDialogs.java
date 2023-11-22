@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
@@ -91,6 +92,8 @@ public final class TaskDialogs {
         private String text = null;
 
         private Integer inputColumns = null;
+
+        private boolean alwayOnTop;
 
         private TaskDialogBuilder() {
         }
@@ -162,6 +165,15 @@ public final class TaskDialogs {
             return TaskDialogBuilder.this;
         }
 
+        public TaskDialogBuilder alwaysOnTop() {
+            this.alwayOnTop = true;
+            return TaskDialogBuilder.this;
+        }
+
+        private boolean isAlwaysOnTop() {
+            return alwayOnTop;
+        }
+
         private String getTitle(String defaultTitle) {
             return title == null ? defaultTitle : title;
         }
@@ -180,11 +192,28 @@ public final class TaskDialogs {
         /**
          * Shows simple information message
          */
-        public void inform() {
+        public TaskDialog inform() {
             TaskDialog td =
                 messageDialog(parent, getTitle(TaskDialog.makeKey("Information")),
                     getIcon(TaskDialog.StandardIcon.INFO), instruction, text);
-            LOGGER.info("Create td: {}", td);
+            td.setAlwaysOnTop(isAlwaysOnTop());
+            td.setVisible(true);
+            return td;
+        }
+
+        /**
+         * Shows simple information message and call the {@code instanceConsumer} before the dialog is set visible.
+         */
+        public void inform(final Consumer<TaskDialog> instanceConsumer) {
+            TaskDialog td =
+                messageDialog(parent, getTitle(TaskDialog.makeKey("Information")),
+                    getIcon(TaskDialog.StandardIcon.INFO), instruction, text);
+            td.setAlwaysOnTop(isAlwaysOnTop());
+
+            if (instanceConsumer != null) {
+                instanceConsumer.accept(td);
+            }
+
             td.setVisible(true);
         }
 
