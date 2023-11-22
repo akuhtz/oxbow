@@ -60,8 +60,6 @@ import org.oxbow.swingbits.util.swing.AncestorAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.miginfocom.swing.MigLayout;
-
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -341,8 +339,11 @@ public final class TaskDialogs {
             dlg.setFixedComponent(p);
 
             TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
-            dlg.setCommands(StandardCommand.OK.derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(),
-                twi.getAutoCloseTimeout()), StandardCommand.CANCEL);
+            dlg
+                .setCommands(
+                    StandardCommand.OK
+                        .derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(), twi.getAutoCloseTimeout()),
+                    StandardCommand.CANCEL);
 
             return dlg.show().equals(StandardCommand.OK) ? models.indexOf(bGroup.getSelection()) : -1;
 
@@ -394,8 +395,11 @@ public final class TaskDialogs {
             }
 
             TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
-            dlg.setCommands(StandardCommand.OK.derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(),
-                twi.getAutoCloseTimeout()), StandardCommand.CANCEL);
+            dlg
+                .setCommands(
+                    StandardCommand.OK
+                        .derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(), twi.getAutoCloseTimeout()),
+                    StandardCommand.CANCEL);
 
             return dlg.show().equals(StandardCommand.OK) ? checkList.getCheckedItems() : null;
 
@@ -414,9 +418,10 @@ public final class TaskDialogs {
 
             // NOTE: Task dialog has to be created first to initialize resources
             // Should resource initialization be done somewhere else (like design itself)?
-            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), // localized title
-                getIcon(null), // null by default, according to MS ux guidlines
-                instruction, text);
+            TaskDialog dlg =
+                questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), // localized title
+                    getIcon(null), // null by default, according to MS ux guidlines
+                    instruction, text);
 
             dlg.setCommands(StandardCommand.CANCEL);
             final CommandLinkButtonGroup bGroup = new CommandLinkButtonGroup();
@@ -427,8 +432,7 @@ public final class TaskDialogs {
             CommandLinkButton btn;
             final JPanel p = new JPanel(new MigLayout(new LC().flowY().noGrid().fillX()));
             p.setOpaque(false);
-            for (final CommandLink link : choices)
-            {
+            for (final CommandLink link : choices) {
                 btn = new CommandLinkButton(link, TaskDialog.getDesign().getCommandLinkPainter());
                 models.add(btn.getModel());
                 buttons.add(btn);
@@ -731,8 +735,9 @@ public final class TaskDialogs {
         dlg.setInstruction(twi.getText());
         dlg.setText(text);
         dlg.setIcon(icon);
-        dlg.setCommands(StandardCommand.CANCEL.derive(TaskDialog.makeKey("Close"), twi.getWaitInterval(),
-            twi.getAutoCloseTimeout()));
+        dlg
+            .setCommands(StandardCommand.CANCEL
+                .derive(TaskDialog.makeKey("Close"), twi.getWaitInterval(), twi.getAutoCloseTimeout()));
         return dlg;
 
     }
@@ -754,9 +759,10 @@ public final class TaskDialogs {
         dlg.setInstruction(twi.getText());
         dlg.setText(text);
         dlg.setIcon(icon);
-        dlg.setCommands(
-            StandardCommand.OK.derive(TaskDialog.makeKey("Yes"), twi.getWaitInterval(), twi.getAutoCloseTimeout()),
-            StandardCommand.CANCEL.derive(TaskDialog.makeKey("No")));
+        dlg
+            .setCommands(
+                StandardCommand.OK.derive(TaskDialog.makeKey("Yes"), twi.getWaitInterval(), twi.getAutoCloseTimeout()),
+                StandardCommand.CANCEL.derive(TaskDialog.makeKey("No")));
         return dlg;
 
     }

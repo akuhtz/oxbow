@@ -354,7 +354,7 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
                 timer = new Timer(1000, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        LOGGER.info("Event fired from timer: {}", timer);
+                        LOGGER.debug("Event fired from timer: {}", timer);
                         tick();
                     }
 
@@ -366,8 +366,9 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
                     @Override
                     public void propertyChange(PropertyChangeEvent e) {
                         if (Boolean.TRUE.equals(e.getNewValue())) {
-                            LOGGER.info("The property visible has changed, e.newValue: {}, visible: {}",
-                                e.getNewValue(), dlg.isVisible());
+                            LOGGER
+                                .info("The property visible has changed, e.newValue: {}, visible: {}", e.getNewValue(),
+                                    dlg.isVisible());
                             LOGGER.info("Start timer: {}", timer);
                             timer.start();
                         }
