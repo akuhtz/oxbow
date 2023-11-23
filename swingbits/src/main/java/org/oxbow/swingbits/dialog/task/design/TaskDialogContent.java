@@ -367,14 +367,14 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
                     @Override
                     public void propertyChange(PropertyChangeEvent e) {
                         LOGGER
-                            .info("The property visible has changed, e.newValue: {}, visible: {}", e.getNewValue(),
+                            .debug("The property visible has changed, e.newValue: {}, visible: {}", e.getNewValue(),
                                 dlg.isVisible());
                         if (Boolean.TRUE.equals(e.getNewValue())) {
-                            LOGGER.info("Start timer: {}", timer);
+                            LOGGER.debug("Start timer: {}", timer);
                             timer.start();
                         }
                         else {
-                            LOGGER.info("Stop timer: {}", timer);
+                            LOGGER.debug("Stop timer: {}", timer);
                             timer.stop();
                         }
                     }
@@ -399,7 +399,7 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
                 if (timer != null) {
                     try {
-                        LOGGER.info("Stop the timer after hide dialog: {}", timer);
+                        LOGGER.debug("Stop the timer after hide dialog: {}", timer);
                         timer.stop();
                     }
                     catch (Exception ex) {
@@ -420,15 +420,13 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
                 LOGGER.info("Timeout reached, stop the timer: {}", timer);
                 timer.stop();
 
-                // TODO added by akuhtz
                 if (command.getAutoCloseTimeout() > 0) {
                     actionPerformed(null);
                 }
             }
             putValue(Action.NAME, getTitle());
 
-            // TODO changed by kuz
-            setEnabled(counter <= 0 || command.getAutoCloseTimeout() > 0);
+            setEnabled(counter <= command.getAutoCloseTimeout());
         }
 
     }

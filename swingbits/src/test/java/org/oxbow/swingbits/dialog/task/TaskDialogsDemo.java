@@ -144,7 +144,7 @@ public class TaskDialogsDemo extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                TaskDialogs.inform(getParentWindow(), "You've won!@@5#3", "The game is over with the 15:3 score");
+                TaskDialogs.inform(getParentWindow(), "You've won!@@15#5", "The game is over with the 15:3 score");
             }
         });
 

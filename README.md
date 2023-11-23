@@ -1,11 +1,7 @@
-[![Build Status](https://travis-ci.org/eugener/oxbow.png?branch=master)](https://travis-ci.org/eugener/oxbow)
-[![Coverage Status](https://coveralls.io/repos/eugener/oxbow/badge.png)](https://coveralls.io/r/eugener/oxbow)
+[![Build Status](https://github.com/akuhtz/oxbow/workflows/Java%20CI/badge.svg)](https://github.com/akuhtz/oxbow/actions)
+[![Maven Central](https://img.shields.io/maven-central/v/org.bidib.org.oxbow/swingbits.svg?label=Maven%20Central&style=flat)](https://search.maven.org/artifact/org.bidib.org.oxbow/swingbits)
 
 **SwingBits** is a collection of useful components and utilities for Java Swing Toolkit. 
-  
-**Download latest releases:**
-  [SwingBits v0.5.0](http://oxbow.googlecode.com/files/swing-bits-0.5.0.zip) and
-  [TaskDialogs v1.3.5](http://oxbow.googlecode.com/files/task-dialog-1.3.5.zip)
 
 The documentation can be found in the [Project Wiki](https://github.com/eugener/oxbow/wiki/_pages).   
 

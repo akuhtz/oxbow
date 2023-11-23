@@ -712,21 +712,35 @@ public final class TaskDialogs {
             this.text = text;
             int prefixPos = text.indexOf(TaskDialog.I18N_PREFIX);
             if (prefixPos >= 0) {
+
+                int posAutoClose =
+                    text.indexOf(TaskDialog.AUTOCLOSE_PREFIX, prefixPos + TaskDialog.I18N_PREFIX.length());
                 try {
-                    waitInterval = Integer.valueOf(text.substring(prefixPos + TaskDialog.I18N_PREFIX.length()));
+                    waitInterval =
+                        Integer
+                            .valueOf(text
+                                .substring(prefixPos + TaskDialog.I18N_PREFIX.length(),
+                                    posAutoClose < 0 ? text.length() : posAutoClose));
                 }
                 catch (Throwable ex) {
                     waitInterval = 0;
                 }
 
-                int posAutoClose =
-                    text.indexOf(TaskDialog.AUTOCLOSE_PREFIX, prefixPos + TaskDialog.I18N_PREFIX.length());
                 try {
                     autoCloseTimeout =
                         Integer.valueOf(text.substring(posAutoClose + TaskDialog.AUTOCLOSE_PREFIX.length()));
                 }
                 catch (Throwable ex) {
                     autoCloseTimeout = 0;
+                }
+
+                // the value of autoclose must be less than waitInterval, otherwise the dialog will close after
+                // autoclose timeout
+                if (waitInterval > 0 && autoCloseTimeout > waitInterval) {
+                    LOGGER
+                        .warn(
+                            "Misconfiguration detected: The autoclose value must not be less than the wait value. Current configuration: "
+                                + text);
                 }
 
                 this.text = text.substring(0, prefixPos);

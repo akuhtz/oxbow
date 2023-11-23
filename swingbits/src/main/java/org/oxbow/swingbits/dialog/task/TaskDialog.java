@@ -91,7 +91,7 @@ public class TaskDialog extends SwingBean {
         String property = System.getProperty(DESIGN_PROPERTY);
         if (property != null) {
             try {
-                return (IContentDesign) Class.forName(property).newInstance();
+                return (IContentDesign) Class.forName(property).getDeclaredConstructor().newInstance();
             }
             catch (Throwable ex) {
                 throw new TaskDialogException("Could not instantiate content design: " + property, ex);
