@@ -437,13 +437,17 @@ public final class TaskDialogs {
         /**
          * Simplifies the presentation of choice based on command links
          * 
+         * @param instanceConsumer
+         *            the optional {@code instanceConsumer} is called before the dialog is set visible
+         * 
          * @param defaultChoice
          *            initial choice selection
          * @param choices
          *            collection of available command links
          * @return selection index or -1 if nothing is selected
          */
-        public int choice(final int defaultChoice, List<CommandLink> choices) {
+        public int choice(
+            final Consumer<TaskDialog> instanceConsumer, final int defaultChoice, List<CommandLink> choices) {
 
             // NOTE: Task dialog has to be created first to initialize resources
             // Should resource initialization be done somewhere else (like design itself)?
@@ -452,7 +456,10 @@ public final class TaskDialogs {
                     getIcon(null), // null by default, according to MS ux guidlines
                     instruction, text);
 
-            dlg.setCommands(StandardCommand.CANCEL);
+            TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
+            dlg
+                .setCommands(StandardCommand.CANCEL
+                    .derive(TaskDialog.makeKey("Close"), twi.getWaitInterval(), twi.getAutoCloseTimeout()));
             final CommandLinkButtonGroup bGroup = new CommandLinkButtonGroup();
 
             final List<ButtonModel> models = new ArrayList<ButtonModel>();
@@ -484,8 +491,26 @@ public final class TaskDialogs {
             }
 
             dlg.setFixedComponent(p);
-            return choices.indexOf(dlg.show());
+            dlg.setAlwaysOnTop(isAlwaysOnTop());
 
+            if (instanceConsumer != null) {
+                instanceConsumer.accept(dlg);
+            }
+
+            return choices.indexOf(dlg.show());
+        }
+
+        /**
+         * Simplifies the presentation of choice based on command links
+         * 
+         * @param defaultChoice
+         *            initial choice selection
+         * @param choices
+         *            collection of available command links
+         * @return selection index or -1 if nothing is selected
+         */
+        public int choice(final int defaultChoice, List<CommandLink> choices) {
+            return choice(null, defaultChoice, choices);
         }
 
         /**
@@ -497,9 +522,23 @@ public final class TaskDialogs {
          *            array of available command links
          * @return selection index or -1 if nothing is selected
          */
-
         public int choice(int defaultChoice, CommandLink... choices) {
             return choice(defaultChoice, Arrays.asList(choices));
+        }
+
+        /**
+         * Simplifies the presentation of choice based on command links
+         * 
+         * @param instanceConsumer
+         *            the optional {@code instanceConsumer} is called before the dialog is set visible
+         * @param defaultChoice
+         *            initial choice selection
+         * @param choices
+         *            array of available command links
+         * @return selection index or -1 if nothing is selected
+         */
+        public int choice(final Consumer<TaskDialog> instanceConsumer, int defaultChoice, CommandLink... choices) {
+            return choice(instanceConsumer, defaultChoice, Arrays.asList(choices));
         }
 
         /**
