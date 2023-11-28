@@ -4,29 +4,29 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static junit.framework.Assert.*;
+class CollectionUtilsTests {
 
-public class CollectionUtilsTests {
-    
-    @Test 
-    public void nullCollectionIsEmpty() {
+    @Test
+    void nullCollectionIsEmpty() {
         Collection<?> c = null;
-        assertEquals( true, CollectionUtils.isEmpty(c));
+        assertTrue(CollectionUtils.isEmpty(c));
     }
 
-    @Test 
-    public void emptyCollectionIsEmpty() {
+    @Test
+    void emptyCollectionIsEmpty() {
         Collection<?> c = Collections.emptyList();
-        assertEquals( true, CollectionUtils.isEmpty(c));
+        assertTrue(CollectionUtils.isEmpty(c));
     }
-    
-    @Test 
-    public void nonEmptyCollectionIsNotEmpty() {
+
+    @Test
+    void nonEmptyCollectionIsNotEmpty() {
         Collection<?> c = Arrays.asList("123");
-        assertEquals( false, CollectionUtils.isEmpty(c));
+        assertFalse(CollectionUtils.isEmpty(c));
     }
     
 }

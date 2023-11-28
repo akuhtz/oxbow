@@ -1,19 +1,20 @@
 package org.oxbow.swingbits.util;
 
-import static junit.framework.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
-public class DeepCopyTests {
+class DeepCopyTests {
 
-    
+
     @Test
-    public void notSameReferences() {
+    void notSameReferences() {
         
         String a = "String";
         assertNotSame( a, DeepCopy.copy(a) );
@@ -60,10 +61,10 @@ public class DeepCopyTests {
         }
         
     }
-    
-    
+
+
     @Test
-    public void attributesAreEqual() {
+    void attributesAreEqual() {
         
         ObjToCopy a = new ObjToCopy();
         assertEquals( a, DeepCopy.copy(a) );
