@@ -1,7 +1,7 @@
-
+/target
+.settings
 .DS_Store
 swingbits/.idea
 *.iml
-/swingbits/.classpath
-/swingbits/.project
-/swingbits/.settings
+.classpath
+.project

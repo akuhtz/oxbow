@@ -27,4 +27,4 @@ jobs:
       - name: Show Maven version
         run: mvn --version
       - name: Build with Maven
-        run: mvn -B -f swingbits/pom.xml --update-snapshots verify
+        run: mvn -B -f pom.xml --update-snapshots verify
