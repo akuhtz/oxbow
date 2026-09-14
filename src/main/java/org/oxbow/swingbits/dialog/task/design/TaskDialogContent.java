@@ -137,8 +137,9 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
         boolean visible = instruction != null && instruction.trim().length() > 0;
         lbInstruction.setVisible(visible);
-        if (visible)
+        if (visible) {
             lbInstruction.setText(Markup.toHTML(instruction));
+        }
     }
 
     public String getInstruction() {
@@ -184,8 +185,7 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
     @Override
     public String getCollapsedLabel() {
-        return Strings.isEmpty(detailsText[0])
-            ? getOwner().getString(UIManager.getString(IContentDesign.TEXT_MORE_DETAILS)) : detailsText[0];
+        return Strings.isEmpty(detailsText[0]) ? getOwner().getString(UIManager.getString(IContentDesign.TEXT_MORE_DETAILS)) : detailsText[0];
     }
 
     @Override
@@ -195,8 +195,7 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
     @Override
     public String getExpandedLabel() {
-        return Strings.isEmpty(detailsText[1])
-            ? getOwner().getString(UIManager.getString(IContentDesign.TEXT_FEWER_DETAILS)) : detailsText[1];
+        return Strings.isEmpty(detailsText[1]) ? getOwner().getString(UIManager.getString(IContentDesign.TEXT_FEWER_DETAILS)) : detailsText[1];
     }
 
     @Override
@@ -212,8 +211,9 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
     @Override
     public void setExpandableComponent(JComponent c) {
         pExpandable.removeAll();
-        if (c != null)
+        if (c != null) {
             pExpandable.add(c);
+        }
         cbDetails.setVisible(c != null && !alwaysExpanded);
     }
 
@@ -285,8 +285,9 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
     public void setComponent(JComponent c) {
         pComponent.removeAll();
-        if (c != null)
+        if (c != null) {
             pComponent.add(c);
+        }
         pComponent.setVisible(c != null);
     }
 
@@ -318,7 +319,7 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
         private final TaskDialog dlg;
 
-        private Timer timer;
+        private final Timer timer;
 
         private int counter;
 
@@ -347,7 +348,7 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
             if (counter > 0) {
 
-                if (command.getWaitInterval() > 0) {
+                if (command.getWaitInterval() > 0 && command.getAutoCloseTimeout() < command.getWaitInterval()) {
                     setEnabled(false);
                 }
 
@@ -366,9 +367,7 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
 
                     @Override
                     public void propertyChange(PropertyChangeEvent e) {
-                        LOGGER
-                            .debug("The property visible has changed, e.newValue: {}, visible: {}", e.getNewValue(),
-                                dlg.isVisible());
+                        LOGGER.debug("The property visible has changed, e.newValue: {}, visible: {}", e.getNewValue(), dlg.isVisible());
                         if (Boolean.TRUE.equals(e.getNewValue())) {
                             LOGGER.debug("Start timer: {}", timer);
                             timer.start();
@@ -380,7 +379,9 @@ public class TaskDialogContent extends JPanel implements TaskDialog.Details, Tas
                     }
                 });
             }
-
+            else {
+                timer = null;
+            }
         }
 
         @Override
