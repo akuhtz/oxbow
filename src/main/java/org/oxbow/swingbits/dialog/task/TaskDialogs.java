@@ -186,16 +186,14 @@ public final class TaskDialogs {
          * Shows simple message using previously set title, icon and instruction
          */
         public void message() {
-            messageDialog(parent, title, icon, instruction, text).setVisible(true);
+            messageDialog(parent, title, icon, instruction, text, isAlwaysOnTop()).setVisible(true);
         }
 
         /**
          * Shows simple information message
          */
         public TaskDialog inform() {
-            TaskDialog td =
-                messageDialog(parent, getTitle(TaskDialog.makeKey("Information")),
-                    getIcon(TaskDialog.StandardIcon.INFO), instruction, text);
+            TaskDialog td = messageDialog(parent, getTitle(TaskDialog.makeKey("Information")), getIcon(TaskDialog.StandardIcon.INFO), instruction, text, isAlwaysOnTop());
             td.setAlwaysOnTop(isAlwaysOnTop());
             td.setVisible(true);
             return td;
@@ -205,9 +203,7 @@ public final class TaskDialogs {
          * Shows simple information message and call the {@code instanceConsumer} before the dialog is set visible.
          */
         public void inform(final Consumer<TaskDialog> instanceConsumer) {
-            TaskDialog td =
-                messageDialog(parent, getTitle(TaskDialog.makeKey("Information")),
-                    getIcon(TaskDialog.StandardIcon.INFO), instruction, text);
+            TaskDialog td = messageDialog(parent, getTitle(TaskDialog.makeKey("Information")), getIcon(TaskDialog.StandardIcon.INFO), instruction, text, isAlwaysOnTop());
             td.setAlwaysOnTop(isAlwaysOnTop());
 
             if (instanceConsumer != null) {
@@ -221,17 +217,14 @@ public final class TaskDialogs {
          * Shows simple error message
          */
         public void error() {
-            messageDialog(parent, getTitle(TaskDialog.makeKey("Error")), getIcon(TaskDialog.StandardIcon.ERROR),
-                instruction, text).setVisible(true);
+            messageDialog(parent, getTitle(TaskDialog.makeKey("Error")), getIcon(TaskDialog.StandardIcon.ERROR), instruction, text, isAlwaysOnTop()).setVisible(true);
         }
 
         /**
          * Shows simple exception message
          */
         public void exception(Throwable ex) {
-            TaskDialog dlg =
-                messageDialog(parent, getTitle(TaskDialog.makeKey("Error")), getIcon(TaskDialog.StandardIcon.ERROR),
-                    instruction, text);
+            TaskDialog dlg = messageDialog(parent, getTitle(TaskDialog.makeKey("Error")), getIcon(TaskDialog.StandardIcon.ERROR), instruction, text, isAlwaysOnTop());
 
             String msg = ex.getMessage();
             boolean noMessage = Strings.isEmpty(msg);
@@ -258,8 +251,7 @@ public final class TaskDialogs {
          * @return
          */
         public boolean ask() {
-            return questionDialog(parent, getTitle(TaskDialog.makeKey("Question")),
-                getIcon(TaskDialog.StandardIcon.QUESTION), instruction, text).show().equals(StandardCommand.OK);
+            return questionDialog(parent, getTitle(TaskDialog.makeKey("Question")), getIcon(TaskDialog.StandardIcon.QUESTION), instruction, text, isAlwaysOnTop()).show().equals(StandardCommand.OK);
         }
 
         /**
@@ -270,8 +262,7 @@ public final class TaskDialogs {
          */
         @Deprecated
         public boolean warn() {
-            return questionDialog(parent, getTitle(TaskDialog.makeKey("Warning")),
-                getIcon(TaskDialog.StandardIcon.WARNING), instruction, text).show().equals(StandardCommand.OK);
+            return questionDialog(parent, getTitle(TaskDialog.makeKey("Warning")), getIcon(TaskDialog.StandardIcon.WARNING), instruction, text, isAlwaysOnTop()).show().equals(StandardCommand.OK);
         }
 
         /**
@@ -280,8 +271,7 @@ public final class TaskDialogs {
          * @return true if accepted
          */
         public boolean isConfirmed() {
-            return questionDialog(parent, getTitle(TaskDialog.makeKey("Warning")),
-                getIcon(TaskDialog.StandardIcon.WARNING), instruction, text).show().equals(StandardCommand.OK);
+            return questionDialog(parent, getTitle(TaskDialog.makeKey("Warning")), getIcon(TaskDialog.StandardIcon.WARNING), instruction, text, isAlwaysOnTop()).show().equals(StandardCommand.OK);
         }
 
         /**
@@ -344,7 +334,7 @@ public final class TaskDialogs {
          */
         public int radioChoice(int defaultChoice, List<String> choices) {
 
-            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), null, instruction, text);
+            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), null, instruction, text, isAlwaysOnTop());
 
             ButtonGroup bGroup = new ButtonGroup();
             List<ButtonModel> models = new ArrayList<ButtonModel>();
@@ -368,11 +358,7 @@ public final class TaskDialogs {
             dlg.setFixedComponent(p);
 
             TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
-            dlg
-                .setCommands(
-                    StandardCommand.OK
-                        .derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(), twi.getAutoCloseTimeout()),
-                    StandardCommand.CANCEL);
+            dlg.setCommands(StandardCommand.OK.derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(), twi.getAutoCloseTimeout()), StandardCommand.CANCEL);
 
             return dlg.show().equals(StandardCommand.OK) ? models.indexOf(bGroup.getSelection()) : -1;
 
@@ -403,7 +389,7 @@ public final class TaskDialogs {
          */
         public <T> Collection<T> checkChoice(List<T> choices, Collection<T> defaultSelection) {
 
-            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), null, instruction, text);
+            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), null, instruction, text, isAlwaysOnTop());
 
             JList list = new JList();
             CheckList<T> checkList = new CheckList.Builder(list).build();
@@ -424,11 +410,7 @@ public final class TaskDialogs {
             }
 
             TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
-            dlg
-                .setCommands(
-                    StandardCommand.OK
-                        .derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(), twi.getAutoCloseTimeout()),
-                    StandardCommand.CANCEL);
+            dlg.setCommands(StandardCommand.OK.derive(TaskDialog.makeKey("Select"), twi.getWaitInterval(), twi.getAutoCloseTimeout()), StandardCommand.CANCEL);
 
             return dlg.show().equals(StandardCommand.OK) ? checkList.getCheckedItems() : null;
 
@@ -446,20 +428,17 @@ public final class TaskDialogs {
          *            collection of available command links
          * @return selection index or -1 if nothing is selected
          */
-        public int choice(
-            final Consumer<TaskDialog> instanceConsumer, final int defaultChoice, List<CommandLink> choices) {
+        public int choice(final Consumer<TaskDialog> instanceConsumer, final int defaultChoice, List<CommandLink> choices) {
 
             // NOTE: Task dialog has to be created first to initialize resources
             // Should resource initialization be done somewhere else (like design itself)?
             TaskDialog dlg =
                 questionDialog(parent, getTitle(TaskDialog.makeKey("Choice")), // localized title
                     getIcon(null), // null by default, according to MS ux guidlines
-                    instruction, text);
+                    instruction, text, isAlwaysOnTop());
 
             TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
-            dlg
-                .setCommands(StandardCommand.CANCEL
-                    .derive(TaskDialog.makeKey("Close"), twi.getWaitInterval(), twi.getAutoCloseTimeout()));
+            dlg.setCommands(StandardCommand.CANCEL.derive(TaskDialog.makeKey("Close"), twi.getWaitInterval(), twi.getAutoCloseTimeout()));
             final CommandLinkButtonGroup bGroup = new CommandLinkButtonGroup();
 
             final List<ButtonModel> models = new ArrayList<ButtonModel>();
@@ -551,7 +530,7 @@ public final class TaskDialogs {
         @SuppressWarnings("unchecked")
         public <T> T input(T defaultValue) {
 
-            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Input")), null, instruction, text);
+            TaskDialog dlg = questionDialog(parent, getTitle(TaskDialog.makeKey("Input")), null, instruction, text, isAlwaysOnTop());
             dlg.setIcon(getIcon(TaskDialog.StandardIcon.INFO));
 
             JFormattedTextField tfInput = new JFormattedTextField();
@@ -674,8 +653,7 @@ public final class TaskDialogs {
      *            collection of available choices
      * @return selection index or -1 if nothing is selected
      */
-    public static final int radioChoice(
-        Window parent, String instruction, String text, int defaultChoice, List<String> choices) {
+    public static final int radioChoice(Window parent, String instruction, String text, int defaultChoice, List<String> choices) {
         return build(parent, instruction, text).radioChoice(defaultChoice, choices);
     }
 
@@ -688,8 +666,7 @@ public final class TaskDialogs {
      * @param choices
      * @return
      */
-    public static final int radioChoice(
-        Window parent, String instruction, String text, int defaultChoice, String... choices) {
+    public static final int radioChoice(Window parent, String instruction, String text, int defaultChoice, String... choices) {
         return build(parent, instruction, text).radioChoice(defaultChoice, choices);
     }
 
@@ -704,8 +681,7 @@ public final class TaskDialogs {
      *            collection of command links
      * @return
      */
-    public static final int choice(
-        Window parent, String instruction, String text, int defaultChoice, List<CommandLink> choices) {
+    public static final int choice(Window parent, String instruction, String text, int defaultChoice, List<CommandLink> choices) {
         return build(parent, instruction, text).choice(defaultChoice, choices);
     }
 
@@ -720,8 +696,7 @@ public final class TaskDialogs {
      *            array of command links
      * @return
      */
-    public static final int choice(
-        Window parent, String instruction, String text, int defaultChoice, CommandLink... choices) {
+    public static final int choice(Window parent, String instruction, String text, int defaultChoice, CommandLink... choices) {
         return build(parent, instruction, text).choice(defaultChoice, choices);
     }
 
@@ -738,7 +713,7 @@ public final class TaskDialogs {
 
     /*----------------------------------------------------------------------------------------------------------*/
 
-    private static class TextWithWaitInterval {
+    public static class TextWithWaitInterval {
 
         String text;
 
@@ -752,22 +727,16 @@ public final class TaskDialogs {
             int prefixPos = text.indexOf(TaskDialog.I18N_PREFIX);
             if (prefixPos >= 0) {
 
-                int posAutoClose =
-                    text.indexOf(TaskDialog.AUTOCLOSE_PREFIX, prefixPos + TaskDialog.I18N_PREFIX.length());
+                int posAutoClose = text.indexOf(TaskDialog.AUTOCLOSE_PREFIX, prefixPos + TaskDialog.I18N_PREFIX.length());
                 try {
-                    waitInterval =
-                        Integer
-                            .valueOf(text
-                                .substring(prefixPos + TaskDialog.I18N_PREFIX.length(),
-                                    posAutoClose < 0 ? text.length() : posAutoClose));
+                    waitInterval = Integer.valueOf(text.substring(prefixPos + TaskDialog.I18N_PREFIX.length(), posAutoClose < 0 ? text.length() : posAutoClose));
                 }
                 catch (Throwable ex) {
                     waitInterval = 0;
                 }
 
                 try {
-                    autoCloseTimeout =
-                        Integer.valueOf(text.substring(posAutoClose + TaskDialog.AUTOCLOSE_PREFIX.length()));
+                    autoCloseTimeout = Integer.valueOf(text.substring(posAutoClose + TaskDialog.AUTOCLOSE_PREFIX.length()));
                 }
                 catch (Throwable ex) {
                     autoCloseTimeout = 0;
@@ -776,10 +745,7 @@ public final class TaskDialogs {
                 // the value of autoclose must be less than waitInterval, otherwise the dialog will close after
                 // autoclose timeout
                 if (waitInterval > 0 && autoCloseTimeout > waitInterval) {
-                    LOGGER
-                        .warn(
-                            "Misconfiguration detected: The autoclose value must not be less than the wait value. Current configuration: "
-                                + text);
+                    LOGGER.warn("Misconfiguration detected: The autoclose value must not be less than the wait value. Current configuration: " + text);
                 }
 
                 this.text = text.substring(0, prefixPos);
@@ -809,7 +775,7 @@ public final class TaskDialogs {
      * @param text
      * @return
      */
-    private static TaskDialog messageDialog(Window parent, String title, Icon icon, String instruction, String text) {
+    private static TaskDialog messageDialog(Window parent, String title, Icon icon, String instruction, String text, boolean isAlwaysOnTop) {
 
         TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
 
@@ -817,9 +783,8 @@ public final class TaskDialogs {
         dlg.setInstruction(twi.getText());
         dlg.setText(text);
         dlg.setIcon(icon);
-        dlg
-            .setCommands(StandardCommand.CANCEL
-                .derive(TaskDialog.makeKey("Close"), twi.getWaitInterval(), twi.getAutoCloseTimeout()));
+        dlg.setCommands(StandardCommand.CANCEL.derive(TaskDialog.makeKey("Close"), twi.getWaitInterval(), twi.getAutoCloseTimeout()));
+        dlg.setAlwaysOnTop(isAlwaysOnTop);
         return dlg;
 
     }
@@ -833,7 +798,7 @@ public final class TaskDialogs {
      * @param text
      * @return
      */
-    private static TaskDialog questionDialog(Window parent, String title, Icon icon, String instruction, String text) {
+    private static TaskDialog questionDialog(Window parent, String title, Icon icon, String instruction, String text, boolean isAlwaysOnTop) {
 
         TextWithWaitInterval twi = new TextWithWaitInterval(instruction);
 
@@ -841,10 +806,8 @@ public final class TaskDialogs {
         dlg.setInstruction(twi.getText());
         dlg.setText(text);
         dlg.setIcon(icon);
-        dlg
-            .setCommands(
-                StandardCommand.OK.derive(TaskDialog.makeKey("Yes"), twi.getWaitInterval(), twi.getAutoCloseTimeout()),
-                StandardCommand.CANCEL.derive(TaskDialog.makeKey("No")));
+        dlg.setCommands(StandardCommand.OK.derive(TaskDialog.makeKey("Yes"), twi.getWaitInterval(), twi.getAutoCloseTimeout()), StandardCommand.CANCEL.derive(TaskDialog.makeKey("No")));
+        dlg.setAlwaysOnTop(isAlwaysOnTop);
         return dlg;
 
     }
