@@ -81,7 +81,7 @@ default, so this works without a GPG key present.
 3. **Inspect** what got staged (optional but recommended):
 
    ```bash
-   mvn njord:list-content -Dstore=release-xxx
+   mvn njord:list-content -Dnjord.store=release-xxx
    ```
 
 4. **Validate** the store against Central's requirements (optional but
@@ -89,13 +89,13 @@ default, so this works without a GPG key present.
    before you publish):
 
    ```bash
-   mvn njord:validate -Ddetails -Dstore=release-xxx
+   mvn njord:validate -Ddetails -Dnjord.store=release-xxx
    ```
 
 5. **Publish** to Central Portal:
 
    ```bash
-   mvn njord:publish -Dstore=release-xxx -Dpublisher=sonatype-cp
+   mvn njord:publish -Dnjord.store=release-xxx -Dnjord.publisher=sonatype-cp
    ```
 
 6. If publish succeeds, the store is dropped automatically and your release
@@ -106,7 +106,7 @@ default, so this works without a GPG key present.
 If you ever want to abandon a staged release instead of publishing it:
 
 ```bash
-mvn njord:drop -Dstore=release-xxx
+mvn njord:drop -Dnjord.store=release-xxx
 ```
 
 ## Notes
